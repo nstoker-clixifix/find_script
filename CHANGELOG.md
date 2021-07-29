@@ -9,3 +9,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial build
 - Use uber logging
+- Add option for local environment variable in `.env`

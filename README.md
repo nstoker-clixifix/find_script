@@ -11,3 +11,7 @@ DATABASE_URL="heroku format" find_script
 ```
 
 Output to be determined.
+
+## Local environment
+
+To save having to include the DATABASE_URL in the commandline, copy the `example.env` file to `.env` and set the database that you want to examine.
