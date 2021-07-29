@@ -1,13 +1,13 @@
 package main
 
 import (
-	"fmt"
-
 	d "github.com/nstoker-clixifix/find_script/internal/database"
+	"github.com/nstoker-clixifix/find_script/internal/logger"
 )
 
 func main() {
-	fmt.Println("Hello, world!")
+	logger := logger.StartLogger()
+	defer logger.Sync()
 
 	d.Connect()
 }

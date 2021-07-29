@@ -1,9 +1,9 @@
 package database
 
 import (
-	"github.com/sirupsen/logrus"
+	"github.com/nstoker-clixifix/find_script/internal/logger"
 )
 
 func Connect() {
-	logrus.Fatalln("not implemented")
+	logger.Log.Fatal("Not implemented")
 }
