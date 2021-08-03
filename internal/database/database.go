@@ -1,23 +1,21 @@
 package database
 
 import (
-	"database/sql"
-	"os"
-
+	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 	"github.com/sirupsen/logrus"
 )
 
-var DB *sql.DB
+var DB *sqlx.DB
+var DbName string
 
-func Connect() {
-	database_url := os.Getenv("DATABASE_URL")
+func Connect(database_url string) {
 	if database_url == "" {
 		logrus.Fatal("environment variable DATABASE_URL not set")
 	}
 
 	logrus.Info("connecting to database")
-	db, err := sql.Open("postgres", database_url)
+	db, err := sqlx.Open("postgres", database_url)
 	if err != nil {
 		logrus.Fatal(err.Error())
 	}
@@ -30,4 +28,14 @@ func Connect() {
 	}
 
 	DB = db
+	GetDatabaseName()
+	logrus.Infof("connected to %s", DbName)
+}
+
+func GetDatabaseName() {
+	err := DB.Get(&DbName, "SELECT current_database();")
+	if err != nil {
+		logrus.Fatalf("failed to get db name %+v", err)
+	}
+
 }

@@ -16,3 +16,4 @@
 
 # Possible credentials leak
 .env
+findScriptTags
