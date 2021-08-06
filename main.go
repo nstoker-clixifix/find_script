@@ -7,6 +7,7 @@ import (
 
 	"github.com/joho/godotenv"
 	d "github.com/nstoker-clixifix/find_script/internal/database"
+	v "github.com/nstoker-clixifix/find_script/internal/version"
 )
 
 var databaseURL string
@@ -21,7 +22,7 @@ func init() {
 
 func main() {
 	// Load the (optional) environment variables file
-	log.Println("Initialising")
+	log.Printf("Initialising %s", v.Version)
 	godotenv.Load(".env")
 	flag.Parse()
 	if useEnvironment {
@@ -43,6 +44,7 @@ func main() {
 	d.ScanTables()
 
 	log.Printf("closing connection to %s", d.DbName)
+	log.Printf("exiting %s", v.Version)
 }
 
 func usage() {
