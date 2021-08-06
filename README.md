@@ -18,10 +18,13 @@ Usage of ./findScriptTags:
 Sample output:
 
 ```log
-INFO[0000] connecting to database                       
-INFO[0000] connected to d285rc9qqf71p4                  
-WARN[0001] attachments row 3847 '<script>alert('Forename!')</script>' 
-INFO[0017] closing connection to %sd285rc9qqf71p4  
+2021/08/06 08:56:15 Initialising
+2021/08/06 08:56:15 connecting to database
+2021/08/06 08:56:15 connected to de759a0055jpa7
+2021/08/06 08:56:17 attachments row 3847 '<script>alert('Forename!')</script>'
+...
+2021/08/06 08:57:53 tickets row 66692 '<script>alert('Forename!')</script>'
+2021/08/06 08:57:54 closing connection to de759a0055jpa7
 ```
 
 ## Local environment

@@ -5,13 +5,13 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/sirupsen/logrus"
+	"log"
 )
 
 func ScanTables() {
 	rows, err := DB.Query(`SELECT table_name FROM information_schema.tables WHERE table_schema='public' and table_name not like 'pg_%' and table_name != 'schema_migrations'`)
 	if err != nil {
-		logrus.Fatal(err)
+		log.Fatal(err)
 	}
 	defer rows.Close()
 
@@ -19,7 +19,7 @@ func ScanTables() {
 		var table string
 		err = rows.Scan(&table)
 		if err != nil {
-			logrus.Fatal(err)
+			log.Fatal(err)
 		}
 
 		checkFields(table)
@@ -43,18 +43,18 @@ func checkFields(table string) {
 	query += fmt.Sprintf(", %s FROM %s WHERE %s", field_list, table, where_clause)
 	rows, err := DB.Queryx(query)
 	if err != nil && err != sql.ErrNoRows {
-		logrus.Fatalf("checkFields: %v (%s)", err, query)
+		log.Fatalf("checkFields: %v (%s)", err, query)
 	}
 	defer rows.Close()
 
 	for rows.Next() {
 		values, err := rows.SliceScan()
 		if err != nil {
-			logrus.Warnf("%s - %v", table, err)
-			// logrus.Fatal(err)
+			log.Printf("%s - %v", table, err)
+			// log.Fatal(err)
 		}
 		if values != nil {
-			// logrus.Infof("%s row %+v", table, values[0])
+			// log.Printf("%s row %+v", table, values[0])
 			listOffences(table, fields, values)
 		}
 	}
@@ -67,7 +67,7 @@ func listOffences(table string, fields []string, values []interface{}) {
 		if column == 0 {
 			id, ok = value.(int64)
 			if !ok {
-				logrus.Errorf("%s.%s error parsing id for '%s'", table, fields[:0], value)
+				log.Printf("%s.%s error parsing id for '%s'", table, fields[:0], value)
 				return
 			}
 			continue
@@ -78,10 +78,12 @@ func listOffences(table string, fields []string, values []interface{}) {
 
 		matchedText := findScriptText(value)
 		if matchedText != "" {
-			logrus.Warnf("%s row %d '%s'", table, id, matchedText)
+			log.Printf("%s row %d '%s'", table, id, matchedText)
 		}
 	}
 }
+
+const MAX_WIDTH = 60
 
 func findScriptText(value interface{}) string {
 	text := fmt.Sprintf("%v", value)
@@ -91,11 +93,11 @@ func findScriptText(value interface{}) string {
 	}
 	closePosition := strings.Index(text, "</script>") + 9
 	if closePosition == -1 {
-		closePosition = startPosition + 60
+		closePosition = startPosition + MAX_WIDTH
 	}
 
-	if closePosition > startPosition+60 {
-		closePosition = startPosition + 60
+	if closePosition > startPosition+MAX_WIDTH {
+		closePosition = startPosition + MAX_WIDTH
 	}
 	if closePosition > len(text) {
 		return text[startPosition:]
@@ -122,7 +124,7 @@ func getTextFields(table string) []string {
 	fields := []string{}
 	rows, err := DB.Query(`SELECT column_name, data_type FROM information_schema.columns WHERE table_name=$1`, table)
 	if err != nil && err != sql.ErrNoRows {
-		logrus.Fatal(err)
+		log.Fatal(err)
 	}
 	defer rows.Close()
 
@@ -130,7 +132,7 @@ func getTextFields(table string) []string {
 		var column string
 		var dataType string
 		if err = rows.Scan(&column, &dataType); err != nil {
-			logrus.Fatal(err)
+			log.Fatal(err)
 		}
 
 		switch dataType {
@@ -143,7 +145,7 @@ func getTextFields(table string) []string {
 			fields = append(fields, column)
 		case "ARRAY", "USER-DEFINED":
 		default:
-			logrus.Warnf("unhandled data type '%s'", dataType)
+			log.Printf("unhandled data type '%s'", dataType)
 		}
 	}
 	return fields

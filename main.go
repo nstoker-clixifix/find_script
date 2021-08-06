@@ -2,11 +2,11 @@ package main
 
 import (
 	"flag"
+	"log"
 	"os"
 
 	"github.com/joho/godotenv"
 	d "github.com/nstoker-clixifix/find_script/internal/database"
-	"github.com/sirupsen/logrus"
 )
 
 var databaseURL string
@@ -21,9 +21,9 @@ func init() {
 
 func main() {
 	// Load the (optional) environment variables file
+	log.Println("Initialising")
 	godotenv.Load(".env")
 	flag.Parse()
-
 	if useEnvironment {
 		databaseURL = os.Getenv("DATABASE_URL")
 		if os.Getenv("DATABASE_URL") == "" {
@@ -42,10 +42,10 @@ func main() {
 
 	d.ScanTables()
 
-	logrus.Info("closing connection to %s", d.DbName)
+	log.Printf("closing connection to %s", d.DbName)
 }
 
 func usage() {
-	logrus.Println("\nUsage: ")
+	log.Println("\nUsage: ")
 	flag.PrintDefaults()
 }
